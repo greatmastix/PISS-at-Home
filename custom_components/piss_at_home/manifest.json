@@ -1,15 +1,10 @@
 {
   "domain": "piss_at_home",
   "name": "PISS@Home",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "documentation": "https://github.com/greatmastix/PISS-Home_hacs_ready",
   "issue_tracker": "https://github.com/greatmastix/PISS-Home_hacs_ready/issues",
-  "codeowners": [
-    "@greatmastix"
-  ],
-  "requirements": [
-    "lightstreamer-client-lib==1.0.1"
-  ],
+  "codeowners": ["@greatmastix"],
   "iot_class": "cloud_push",
   "config_flow": true
 }
