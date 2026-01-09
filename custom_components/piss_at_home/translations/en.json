@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "PISS@Home",
+        "description": "Adds a sensor for the ISS urine tank fill level."
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "PISS@Home Options",
+        "description": "No options yet."
+      }
+    }
+  }
+}

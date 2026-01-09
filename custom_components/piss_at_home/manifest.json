@@ -1,0 +1,15 @@
+{
+  "domain": "piss_at_home",
+  "name": "PISS@Home",
+  "version": "0.2.0",
+  "documentation": "https://github.com/YOU/piss-at-home",
+  "issue_tracker": "https://github.com/YOU/piss-at-home/issues",
+  "codeowners": [
+    "@YOU"
+  ],
+  "requirements": [
+    "lightstreamer-client-lib==1.0.1"
+  ],
+  "iot_class": "cloud_push",
+  "config_flow": true
+}
