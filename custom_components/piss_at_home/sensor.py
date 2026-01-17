@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Optional
 
 from homeassistant.components.sensor import SensorEntity
@@ -11,10 +12,16 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
-    ISS_URINE_TANK_FIELDS,
+    DEFAULT_OPTIONS,
+    ISS_FRESH_WATER_TANK_ITEM,
+    ISS_TANK_FIELDS,
     ISS_URINE_TANK_ITEM,
+    ISS_WASTE_WATER_TANK_ITEM,
     LS_ADAPTER_SET,
     LS_SERVER,
+    OPTION_INCLUDE_FRESH_WATER_TANK,
+    OPTION_INCLUDE_URINE_TANK,
+    OPTION_INCLUDE_WASTE_WATER_TANK,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,24 +30,62 @@ _LOGGER = logging.getLogger(__name__)
 from lightstreamer.client import LightstreamerClient, Subscription  # type: ignore
 
 
+@dataclass(frozen=True)
+class TankDefinition:
+    name: str
+    unique_id: str
+    item: str
+    icon: str
+
+
+TANK_DEFINITIONS = {
+    OPTION_INCLUDE_URINE_TANK: TankDefinition(
+        name="ISS Urine Tank",
+        unique_id="piss_at_home_iss_urine_tank_node3000005",
+        item=ISS_URINE_TANK_ITEM,
+        icon="mdi:toilet",
+    ),
+    OPTION_INCLUDE_WASTE_WATER_TANK: TankDefinition(
+        name="ISS Waste Water Tank",
+        unique_id="piss_at_home_iss_waste_water_tank_node3000006",
+        item=ISS_WASTE_WATER_TANK_ITEM,
+        icon="mdi:water-alert",
+    ),
+    OPTION_INCLUDE_FRESH_WATER_TANK: TankDefinition(
+        name="ISS Fresh Water Tank",
+        unique_id="piss_at_home_iss_fresh_water_tank_node3000007",
+        item=ISS_FRESH_WATER_TANK_ITEM,
+        icon="mdi:water",
+    ),
+}
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up sensor entities for the config entry."""
-    async_add_entities([PissatHomeUrineTankSensor(hass)])
+    options = {**DEFAULT_OPTIONS, **entry.options}
+    sensors = [
+        PissatHomeTankSensor(hass, definition)
+        for option_key, definition in TANK_DEFINITIONS.items()
+        if options.get(option_key, False)
+    ]
+    if sensors:
+        async_add_entities(sensors)
 
 
-class PissatHomeUrineTankSensor(SensorEntity):
-    _attr_name = "ISS Urine Tank"
-    _attr_unique_id = "piss_at_home_iss_urine_tank_node3000005"
+class PissatHomeTankSensor(SensorEntity):
     _attr_native_unit_of_measurement = PERCENTAGE
-    _attr_icon = "mdi:toilet"
     _attr_should_poll = False  # push updates
 
-    def __init__(self, hass: HomeAssistant) -> None:
+    def __init__(self, hass: HomeAssistant, definition: TankDefinition) -> None:
         self.hass = hass
+        self._definition = definition
+        self._attr_name = definition.name
+        self._attr_unique_id = definition.unique_id
+        self._attr_icon = definition.icon
         self._attr_native_value: Optional[float] = None
         self._task: Optional[asyncio.Task] = None
         self._client: Optional[LightstreamerClient] = None
@@ -50,7 +95,7 @@ class PissatHomeUrineTankSensor(SensorEntity):
     def extra_state_attributes(self):
         return {
             "source": "ISS telemetry via Lightstreamer",
-            "item": ISS_URINE_TANK_ITEM,
+            "item": self._definition.item,
             "connected": self._connected,
         }
 
@@ -92,7 +137,7 @@ class PissatHomeUrineTankSensor(SensorEntity):
         client = LightstreamerClient(LS_SERVER, LS_ADAPTER_SET)
         self._client = client
 
-        sub = Subscription("MERGE", [ISS_URINE_TANK_ITEM], ISS_URINE_TANK_FIELDS)
+        sub = Subscription("MERGE", [self._definition.item], ISS_TANK_FIELDS)
 
         def on_update(item_update):
             try:
