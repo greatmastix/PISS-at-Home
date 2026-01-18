@@ -1,7 +1,7 @@
 {
   "domain": "piss_at_home",
   "name": "PISS@Home",
-  "version": "0.2.2",
+  "version": "0.2.1",
   "documentation": "https://github.com/greatmastix/PISS-Home_hacs_ready",
   "issue_tracker": "https://github.com/greatmastix/PISS-Home_hacs_ready/issues",
   "codeowners": ["@greatmastix"],

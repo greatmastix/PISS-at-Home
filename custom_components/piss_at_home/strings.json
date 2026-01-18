@@ -12,12 +12,7 @@
     "step": {
       "init": {
         "title": "PISS@Home Options",
-        "description": "Choose which ISS water system tanks to monitor.",
-        "data": {
-          "include_urine_tank": "Urine tank",
-          "include_waste_water_tank": "Waste water tank",
-          "include_fresh_water_tank": "Fresh water tank"
-        }
+        "description": "No options yet."
       }
     }
   }

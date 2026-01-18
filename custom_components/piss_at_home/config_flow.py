@@ -1,17 +1,9 @@
 from __future__ import annotations
 
-import voluptuous as vol
-
 from homeassistant import config_entries
 from homeassistant.core import callback
 
-from .const import (
-    DEFAULT_OPTIONS,
-    DOMAIN,
-    OPTION_INCLUDE_FRESH_WATER_TANK,
-    OPTION_INCLUDE_URINE_TANK,
-    OPTION_INCLUDE_WASTE_WATER_TANK,
-)
+from .const import DOMAIN
 
 
 class PissatHomeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -35,24 +27,5 @@ class PissatHomeOptionsFlow(config_entries.OptionsFlow):
         self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
-        if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-
-        options = {**DEFAULT_OPTIONS, **self.config_entry.options}
-        schema = vol.Schema(
-            {
-                vol.Optional(
-                    OPTION_INCLUDE_URINE_TANK,
-                    default=options[OPTION_INCLUDE_URINE_TANK],
-                ): bool,
-                vol.Optional(
-                    OPTION_INCLUDE_WASTE_WATER_TANK,
-                    default=options[OPTION_INCLUDE_WASTE_WATER_TANK],
-                ): bool,
-                vol.Optional(
-                    OPTION_INCLUDE_FRESH_WATER_TANK,
-                    default=options[OPTION_INCLUDE_FRESH_WATER_TANK],
-                ): bool,
-            }
-        )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        # No options yet; placeholder for future settings (e.g., reconnect backoff).
+        return self.async_create_entry(title="", data={})
